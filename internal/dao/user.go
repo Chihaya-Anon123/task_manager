@@ -20,6 +20,6 @@ func GetUserByUsername(username string) (*model.User, error) {
 	return &user, nil
 }
 
-func CreaterUser(user *model.User) error {
+func CreateUser(user *model.User) error {
 	return database.DB.Create(user).Error
 }

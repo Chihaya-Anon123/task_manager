@@ -7,6 +7,7 @@ import (
 	"github.com/Chihaya-Anon123/task_manager/internal/database"
 	"github.com/Chihaya-Anon123/task_manager/internal/logger"
 	"github.com/Chihaya-Anon123/task_manager/internal/router"
+	"github.com/Chihaya-Anon123/task_manager/internal/service"
 )
 
 func main() {
@@ -28,6 +29,8 @@ func main() {
 	if err := database.AutoMigrate(); err != nil {
 		logger.Log.Fatalw("auto migrate failed", "error", err)
 	}
+
+	service.InitAuthService(cfg.JWT)
 
 	//初始化路由
 	r := router.SetupRouter()

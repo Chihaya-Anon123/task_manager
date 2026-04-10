@@ -33,6 +33,7 @@ func SetupRouter() *gin.Engine {
 		authGroup := apiV1.Group("/auth")
 		{
 			authGroup.POST("/register", api.Register)
+			authGroup.POST("/login", api.Login)
 		}
 	}
 	return r

@@ -3,6 +3,7 @@ package router
 import (
 	"errors"
 
+	"github.com/Chihaya-Anon123/task_manager/internal/api"
 	"github.com/Chihaya-Anon123/task_manager/internal/errs"
 	"github.com/Chihaya-Anon123/task_manager/internal/response"
 	"github.com/gin-gonic/gin"
@@ -26,5 +27,13 @@ func SetupRouter() *gin.Engine {
 		err := errors.New("sql: connection is broken")
 		response.HandleError(c, err)
 	})
+
+	apiV1 := r.Group("/api/v1")
+	{
+		authGroup := apiV1.Group("/auth")
+		{
+			authGroup.POST("/register", api.Register)
+		}
+	}
 	return r
 }

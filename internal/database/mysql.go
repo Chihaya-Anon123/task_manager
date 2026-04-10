@@ -49,7 +49,7 @@ func AutoMigrate() error {
 		return fmt.Errorf("database is not initialized")
 	}
 
-	if err := DB.AutoMigrate(&model.Task{}); err != nil {
+	if err := DB.AutoMigrate(&model.Task{}, &model.User{}); err != nil {
 		return fmt.Errorf("auto migrate failed: %w", err)
 	}
 

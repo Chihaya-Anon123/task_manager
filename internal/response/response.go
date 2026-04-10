@@ -23,6 +23,14 @@ func Success(c *gin.Context, data interface{}) {
 	})
 }
 
+func SuccessWithMessage(c *gin.Context, msg string, data interface{}) {
+	c.JSON(http.StatusOK, Response{
+		Code:    code.CodeSuccess,
+		Message: msg,
+		Data:    data,
+	})
+}
+
 func Fail(c *gin.Context, code int, message string) {
 	c.JSON(http.StatusOK, Response{
 		Code:    code,

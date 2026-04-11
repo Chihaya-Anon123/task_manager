@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -28,4 +29,24 @@ func GenerateToken(userID uint, username, secret string, expireHours int) (strin
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(secret))
+}
+
+func ParseToken(tokenString, secret string) (*UserClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
+		//限制签名算法，防止被替换
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("invalid signing method")
+		}
+		return []byte(secret), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	claims, ok := token.Claims.(*UserClaims)
+	if !ok || !token.Valid {
+		return nil, errors.New("invalid token")
+	}
+
+	return claims, nil
 }

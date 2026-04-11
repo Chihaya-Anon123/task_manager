@@ -4,12 +4,14 @@ import (
 	"errors"
 
 	"github.com/Chihaya-Anon123/task_manager/internal/api"
+	"github.com/Chihaya-Anon123/task_manager/internal/config"
 	"github.com/Chihaya-Anon123/task_manager/internal/errs"
+	"github.com/Chihaya-Anon123/task_manager/internal/middleware"
 	"github.com/Chihaya-Anon123/task_manager/internal/response"
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter() *gin.Engine {
+func SetupRouter(cfg config.JWTConfig) *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
@@ -34,6 +36,18 @@ func SetupRouter() *gin.Engine {
 		{
 			authGroup.POST("/register", api.Register)
 			authGroup.POST("/login", api.Login)
+		}
+
+		userGroup := apiV1.Group("/user")
+		userGroup.Use(middleware.JWTAuth(cfg))
+		{
+			userGroup.GET("/me", api.GetMe)
+		}
+
+		taskGroup := apiV1.Group("/tasks")
+		taskGroup.Use(middleware.JWTAuth(cfg))
+		{
+			taskGroup.POST("", api.CreateTask)
 		}
 	}
 	return r

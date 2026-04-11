@@ -33,7 +33,7 @@ func main() {
 	service.InitAuthService(cfg.JWT)
 
 	//初始化路由
-	r := router.SetupRouter()
+	r := router.SetupRouter(cfg.JWT)
 
 	logger.Log.Infow("server starting", "port", cfg.Server.Port)
 

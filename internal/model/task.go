@@ -4,6 +4,7 @@ import "time"
 
 type Task struct {
 	ID          uint      `gorm:"primaryKey" json:"id"`
+	UserID      uint      `gorm:"not null;index" json:"user_id"`
 	Title       string    `gorm:"type:varchar(100);not null" json:"title"`
 	Description string    `gorm:"type:text" json:"description"`
 	Status      string    `gorm:"type:varchar(20);default:'todo'" json:"status"`

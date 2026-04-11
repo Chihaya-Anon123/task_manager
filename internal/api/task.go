@@ -30,3 +30,25 @@ func CreateTask(c *gin.Context) {
 
 	response.SuccessWithMessage(c, "task created successfully", output)
 }
+
+func ListTasks(c *gin.Context) {
+	userID, ok := middleware.GetCurrentUserID(c)
+	if !ok {
+		response.HandleError(c, errs.New(code.CodeUnauthorized, "failed to get userID"))
+		return
+	}
+
+	var input service.ListTasksInput
+	if err := c.ShouldBindQuery(&input); err != nil {
+		response.HandleError(c, errs.New(code.CodeInvalidParams, "invalid request"))
+		return
+	}
+
+	output, err := service.ListTasks(userID, input)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+
+	response.Success(c, output)
+}

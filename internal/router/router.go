@@ -48,6 +48,7 @@ func SetupRouter(cfg config.JWTConfig) *gin.Engine {
 		taskGroup.Use(middleware.JWTAuth(cfg))
 		{
 			taskGroup.POST("", api.CreateTask)
+			taskGroup.GET("", api.ListTasks)
 		}
 	}
 	return r

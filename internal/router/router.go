@@ -49,6 +49,9 @@ func SetupRouter(cfg config.JWTConfig) *gin.Engine {
 		{
 			taskGroup.POST("", api.CreateTask)
 			taskGroup.GET("", api.ListTasks)
+			taskGroup.GET("/:id", api.GetTaskDetail)
+			taskGroup.PUT("/:id", api.UpdateTask)
+			taskGroup.DELETE("/:id", api.DeleteTask)
 		}
 	}
 	return r

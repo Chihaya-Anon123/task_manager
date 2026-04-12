@@ -125,3 +125,113 @@ func ListTasks(usrID uint, input ListTasksInput) (*ListTasksOutput, error) {
 		PageSize: input.PageSize,
 	}, nil
 }
+
+type TaskDetailOutput struct {
+	ID          uint   `json:"id"`
+	UserID      uint   `json:"user_id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+}
+
+func GetTaskDetail(taskID, userID uint) (*TaskDetailOutput, error) {
+	if taskID == 0 {
+		return nil, errs.New(code.CodeInvalidParams, "invalid task id")
+	}
+
+	task, err := dao.GetTaskByIDAndUserID(taskID, userID)
+	if err != nil {
+		return nil, errs.ErrDBError
+	}
+	if task == nil {
+		return nil, errs.New(code.CodeNotFound, "task not found")
+	}
+
+	return &TaskDetailOutput{
+		ID:          task.ID,
+		UserID:      task.UserID,
+		Title:       task.Title,
+		Description: task.Description,
+		Status:      task.Status,
+	}, nil
+}
+
+type UpdateTaskInput struct {
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	Status      *string `json:"status"`
+}
+
+type UpdateTaskOutput struct {
+	ID          uint   `json:"id"`
+	UserID      uint   `json:"user_id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+}
+
+func UpdateTask(userID, taskID uint, input UpdateTaskInput) (*UpdateTaskOutput, error) {
+	if taskID == 0 {
+		return nil, errs.New(code.CodeInvalidParams, "invalid task id")
+	}
+
+	task, err := dao.GetTaskByIDAndUserID(taskID, userID)
+	if err != nil {
+		return nil, errs.ErrDBError
+	}
+	if task == nil {
+		return nil, errs.New(code.CodeNotFound, "task not found")
+	}
+
+	if input.Title != nil {
+		title := strings.TrimSpace(*input.Title)
+		if title == "" {
+			return nil, errs.New(code.CodeInvalidParams, "title cannot be empty")
+		}
+		task.Title = title
+	}
+
+	if input.Description != nil {
+		task.Description = strings.TrimSpace(*input.Description)
+	}
+
+	if input.Status != nil {
+		status := strings.TrimSpace(*input.Status)
+		if status != "todo" && status != "doing" && status != "done" {
+			return nil, errs.New(code.CodeInvalidParams, "invalid status")
+		}
+		task.Status = status
+	}
+
+	if err := dao.UpdateTask(task); err != nil {
+		return nil, errs.ErrDBError
+	}
+
+	return &UpdateTaskOutput{
+		ID:          task.ID,
+		UserID:      task.UserID,
+		Title:       task.Title,
+		Description: task.Description,
+		Status:      task.Status,
+	}, nil
+}
+
+func DeleteTask(userID, taskID uint) error {
+	if taskID == 0 {
+		return errs.New(code.CodeInvalidParams, "invalid task id")
+	}
+
+	task, err := dao.GetTaskByIDAndUserID(taskID, userID)
+	if err != nil {
+		return errs.ErrDBError
+	}
+	if task == nil {
+		return errs.New(code.CodeNotFound, "task not found")
+	}
+
+	if err := dao.DeleteTask(task); err != nil {
+		return errs.ErrDBError
+	}
+
+	return nil
+}
